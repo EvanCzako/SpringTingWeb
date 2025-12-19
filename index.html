@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
-	<title>Bike1</title>
-	<style>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+		<title>Bike1</title>
+		<style>
 html, body, #canvas {
 	margin: 0;
 	padding: 0;
@@ -75,116 +75,32 @@ body {
 	text-align: center;
 	z-index: 1;
 }
+		</style>
+		<link id="-gd-engine-icon" rel="icon" type="image/png" href="BikeyBoii1.icon.png" />
+<link rel="apple-touch-icon" href="BikeyBoii1.apple-touch-icon.png"/>
 
-/* ---------------------- */
-/* MOBILE BUTTONS STYLING */
-/* ---------------------- */
-/* Common styling */
-.mobile-button {
-    display: none; /* hidden by default, shown on mobile */
-    padding: 14px 20px;
-    font-size: 18px;
-    border-radius: 10px;
-    border: 2px solid white;
-    background: rgba(0,0,0,0.7);
-    color: white;
-    touch-action: none;
-    user-select: none;
-    z-index: 999;
-    position: relative;
-}
-/* LEFT container: bottom-left, horizontal */
-#left-buttons {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    display: flex;
-    gap: 10px; /* space between left/right buttons */
-}
+	</head>
+	<body>
+		<canvas id="canvas">
+			Your browser does not support the canvas tag.
+		</canvas>
 
-/* RIGHT container: bottom-right, vertical */
-#right-buttons {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px; /* space between stacked buttons */
-}
+		<noscript>
+			Your browser does not support JavaScript.
+		</noscript>
 
-	</style>
+		<div id="status">
+			<img id="status-splash" src="BikeyBoii1.png" alt="">
+			<progress id="status-progress"></progress>
+			<div id="status-notice"></div>
+		</div>
 
-	<link id="-gd-engine-icon" rel="icon" type="image/png" href="BikeyBoii1.icon.png" />
-	<link rel="apple-touch-icon" href="BikeyBoii1.apple-touch-icon.png"/>
-</head>
-<body>
-	<canvas id="canvas">
-		Your browser does not support the canvas tag.
-	</canvas>
-
-	<!-- MOBILE BUTTONS -->
-	<!-- LEFT SIDE: horizontal buttons -->
-	<div id="left-buttons">
-			<button class="mobile-button" id="leftBtn">◀️</button>
-			<button class="mobile-button" id="rightBtn">▶️</button>
-	</div>
-
-	<!-- RIGHT SIDE: vertical buttons -->
-	<div id="right-buttons">
-			<button class="mobile-button" id="nitroBtn">Nitro</button>
-			<button class="mobile-button" id="shootBtn">Shoot</button>
-			<button class="mobile-button" id="jumpBtn">Jump</button>
-	</div>
-
-
-	<noscript>
-		Your browser does not support JavaScript.
-	</noscript>
-
-	<div id="status">
-		<img id="status-splash" src="BikeyBoii1.png" alt="">
-		<progress id="status-progress"></progress>
-		<div id="status-notice"></div>
-	</div>
-
-	<script src="BikeyBoii1.js"></script>
-	<script>
+		<script src="BikeyBoii1.js"></script>
+		<script>
 const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":true,"executable":"BikeyBoii1","experimentalVK":false,"fileSizes":{"BikeyBoii1.pck":52168496,"BikeyBoii1.wasm":43016933},"focusCanvas":true,"gdextensionLibs":[]};
 const GODOT_THREADS_ENABLED = false;
 const engine = new Engine(GODOT_CONFIG);
 
-/* ---------------------- */
-/* MOBILE DETECTION & BUTTON HOOKS */
-/* ---------------------- */
-(function() {
-
-	const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-	if (isMobile) {
-			// Show all mobile buttons
-			document.querySelectorAll('.mobile-button').forEach(btn => btn.style.display='block');
-
-			// Hook buttons to Godot Input Map actions
-			document.getElementById("leftBtn").addEventListener("touchstart", () => GodotRuntime.inputAction("left", true));
-			document.getElementById("leftBtn").addEventListener("touchend", () => GodotRuntime.inputAction("left", false));
-
-			document.getElementById("rightBtn").addEventListener("touchstart", () => GodotRuntime.inputAction("right", true));
-			document.getElementById("rightBtn").addEventListener("touchend", () => GodotRuntime.inputAction("right", false));
-
-			document.getElementById("jumpBtn").addEventListener("touchstart", () => GodotRuntime.inputAction("up", true));
-			document.getElementById("jumpBtn").addEventListener("touchend", () => GodotRuntime.inputAction("up", false));
-
-			document.getElementById("shootBtn").addEventListener("touchstart", () => GodotRuntime.inputAction("shoot", true));
-			document.getElementById("shootBtn").addEventListener("touchend", () => GodotRuntime.inputAction("shoot", false));
-
-			document.getElementById("nitroBtn").addEventListener("touchstart", () => GodotRuntime.inputAction("nitro", true));
-			document.getElementById("nitroBtn").addEventListener("touchend", () => GodotRuntime.inputAction("nitro", false));
-	}
-
-}());
-
-/* ---------------------- */
-/* EXISTING GODOT LOADING LOGIC */
-/* ---------------------- */
 (function () {
 	const statusOverlay = document.getElementById('status');
 	const statusProgress = document.getElementById('status-progress');
@@ -238,6 +154,7 @@ const engine = new Engine(GODOT_CONFIG);
 
 	if (missing.length !== 0) {
 		if (GODOT_CONFIG['serviceWorker'] && GODOT_CONFIG['ensureCrossOriginIsolationHeaders'] && 'serviceWorker' in navigator) {
+			// There's a chance that installing the service worker would fix the issue
 			Promise.race([
 				navigator.serviceWorker.getRegistration().then((registration) => {
 					if (registration != null) {
@@ -245,6 +162,7 @@ const engine = new Engine(GODOT_CONFIG);
 					}
 					return registration;
 				}).then(() => engine.installServiceWorker()),
+				// For some reason, `getRegistration()` can stall
 				new Promise((resolve) => {
 					setTimeout(() => resolve(), 2000);
 				}),
@@ -254,6 +172,7 @@ const engine = new Engine(GODOT_CONFIG);
 				window.location.reload();
 			});
 		} else {
+			// Display the message as usual
 			const missingMsg = 'Error\nThe following features required to run Godot projects on the Web are missing:\n';
 			displayFailureNotice(missingMsg + missing.join('\n'));
 		}
@@ -274,6 +193,7 @@ const engine = new Engine(GODOT_CONFIG);
 		}, displayFailureNotice);
 	}
 }());
-	</script>
-</body>
+		</script>
+	</body>
 </html>
+
